@@ -12,9 +12,19 @@ namespace GroupTrip.Server.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Person>().HasOne<Group>().WithMany(g => g.People);
-            modelBuilder.Entity<Group>().HasOne(g => g.Trip).WithMany(t => t.Groups);
-            modelBuilder.Entity<Payment>().HasOne(p => p.Person).WithMany(p => p.Payments);
+            //modelBuilder.Entity<Person>().HasOne<Group>().WithMany(g => g.People);
+            //modelBuilder.Entity<Group>().HasOne(g => g.Trip).WithMany(t => t.Groups);
+            //modelBuilder.Entity<Payment>().HasOne(p => p.Person).WithMany(p => p.Payments);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                var connection =
+                    @"Server=(localdb)\mssqllocaldb;Database=GroupTrip.Db;Trusted_Connection=True;ConnectRetryCount=0";
+                optionsBuilder.UseSqlServer(connection);
+            }
         }
     }
 }

@@ -18,10 +18,10 @@ namespace GroupTrip.Server
         {
             services.AddMvc();
 
-            var connection =
-                @"Server=(localdb)\mssqllocaldb;Database=GroupTrip.Db;Trusted_Connection=True;ConnectRetryCount=0";
-            services.AddDbContext<GroupTripContext>
-                (options => options.UseSqlServer(connection));
+            //var connection =
+            //    @"Server=(localdb)\mssqllocaldb;Database=GroupTrip.Db;Trusted_Connection=True;ConnectRetryCount=0";
+            //services.AddDbContext<GroupTripContext>
+            //    (options => options.UseSqlServer(connection));
 
             services.AddResponseCompression(options =>
             {
