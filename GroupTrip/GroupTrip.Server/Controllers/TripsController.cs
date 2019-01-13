@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using GroupTrip.Server.DataAccess;
 using GroupTrip.Shared.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroupTrip.Server.Controllers
@@ -38,7 +34,7 @@ namespace GroupTrip.Server.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("api/Trips/Create")]
-        public void Create([FromBody]Trip newTrip)
+        public void Create([FromBody] Trip newTrip)
         {
             _db.AddTrip(newTrip);
         }
@@ -46,7 +42,7 @@ namespace GroupTrip.Server.Controllers
         // PUT: Trips/Edit
         [HttpPut]
         [Route("api/Trips/Edit")]
-        public void Edit([FromBody]Trip updatedTrip)
+        public void Edit([FromBody] Trip updatedTrip)
         {
             _db.UpdateTrip(updatedTrip);
         }
