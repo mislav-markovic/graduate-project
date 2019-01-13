@@ -17,6 +17,7 @@ namespace GroupTrip.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSingleton<GroupTripDAL>();
 
             //var connection =
             //    @"Server=(localdb)\mssqllocaldb;Database=GroupTrip.Db;Trusted_Connection=True;ConnectRetryCount=0";
