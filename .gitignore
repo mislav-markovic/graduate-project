@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/GroupTrip/.vs
+/GroupTrip/GroupTrip.Client/bin/Debug/netstandard2.0
+/GroupTrip/GroupTrip.Client/obj
+/GroupTrip/GroupTrip.Server/bin/Debug/netcoreapp2.1
+/GroupTrip/GroupTrip.Server/obj
+/GroupTrip/GroupTrip.Shared/bin/Debug/netstandard2.0
+/GroupTrip/GroupTrip.Shared/obj
