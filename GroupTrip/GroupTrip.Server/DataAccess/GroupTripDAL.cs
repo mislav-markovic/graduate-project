@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GroupTrip.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +7,7 @@ namespace GroupTrip.Server.DataAccess
 {
     public class GroupTripDAL
     {
-        private GroupTripContext _context;
+        private readonly GroupTripContext _context;
 
         public GroupTripDAL()
         {
