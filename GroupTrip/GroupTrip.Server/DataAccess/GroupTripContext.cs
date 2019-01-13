@@ -10,6 +10,11 @@ namespace GroupTrip.Server.DataAccess
         public virtual DbSet<Trip> TripDbSet { get; set; }
         public virtual DbSet<Payment> PaymentDbSet { get; set; }
 
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Person>().HasOne<Group>().WithMany(g => g.People);
+            modelBuilder.Entity<Group>().HasOne(g => g.Trip).WithMany(t => t.Groups);
+            modelBuilder.Entity<Payment>().HasOne(p => p.Person).WithMany(p => p.Payments);
+        }
     }
 }
