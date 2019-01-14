@@ -33,7 +33,8 @@ else
                 <td>@trip.EndDate</td>
                 <td>
                     <a href='/edittrip/@trip.Id'>Edit</a>  |
-                    <a href='/delete/@trip.Id'>Delete</a>
+                    <a onclick="@(async () => await Delete(trip.Id))">Delete</a> |
+                    <a href='/tripdetails/@trip.Id'>Details</a>
                 </td>
             </tr>
         }
@@ -46,7 +47,14 @@ else
 
     protected override async Task OnInitAsync()
     {
+        _tripsList = new Trip[0];
         _tripsList = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
     }
 
+    async Task Delete(int id)
+    {
+        var url = "/api/Trips/Delete/" + id;
+        await Http.DeleteAsync(url);
+        _tripsList = _tripsList.Where(val => val.Id != id).ToArray();
+    }
 }

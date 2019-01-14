@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GroupTrip.Server.DataAccess;
 using GroupTrip.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,6 @@ namespace GroupTrip.Server.Controllers
 
         // POST: Trips/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Route("api/Trips/Create")]
         public void Create([FromBody] Trip newTrip)
         {
