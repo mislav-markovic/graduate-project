@@ -18,7 +18,8 @@ else
         <thead>
         <tr>
             <th>Location</th>
-            <th>Description</th>
+          <th>Description</th>
+          <th>Groups</th>
             <th>Start Date</th>
             <th>End Date</th>
         </tr>
@@ -26,15 +27,21 @@ else
         <tbody>
         @foreach (var trip in _tripsList)
         {
-            <tr>
+            <tr style="background-color:@(DateTime.Now > trip.EndDate ? "red" : "green")">
                 <td>@trip.Location</td>
-                <td>@trip.Description</td>
+               <td>@trip.Description</td>
+              <td>
+                @foreach (var group in trip.Groups)
+                {
+                  <a href='/groupdetails/@group.Id'>@group.Name</a><br/>
+                  <a onclick="@(async () => await DeleteGroup(group.Id))">Delete</a>
+                }
+              </td>
                 <td>@trip.StartDate</td>
                 <td>@trip.EndDate</td>
                 <td>
                     <a href='/edittrip/@trip.Id'>Edit</a>  |
-                    <a onclick="@(async () => await Delete(trip.Id))">Delete</a> |
-                    <a href='/tripdetails/@trip.Id'>Details</a>
+                    <a onclick="@(async () => await Delete(trip.Id))">Delete</a>
                 </td>
             </tr>
         }
@@ -43,18 +50,26 @@ else
 }
 
 @functions {
-    Trip[] _tripsList;
+  Trip[] _tripsList;
 
-    protected override async Task OnInitAsync()
-    {
-        _tripsList = new Trip[0];
-        _tripsList = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
-    }
+  protected override async Task OnInitAsync()
+  {
+    _tripsList = new Trip[0];
+    _tripsList = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
+  }
 
-    async Task Delete(int id)
-    {
-        var url = "/api/Trips/Delete/" + id;
-        await Http.DeleteAsync(url);
-        _tripsList = _tripsList.Where(val => val.Id != id).ToArray();
-    }
+  async Task Delete(int id)
+  {
+    var url = "/api/Trips/Delete/" + id;
+    await Http.DeleteAsync(url);
+    _tripsList = _tripsList.Where(val => val.Id != id).ToArray();
+  }
+
+  async Task DeleteGroup(int groupId)
+  {
+    var url = "/api/Groups/Delete/" + groupId;
+    await Http.DeleteAsync(url);
+    var trip = _tripsList.First(t => t.Groups.Select(g => g.Id).Contains(groupId));
+    trip.Groups = trip.Groups.Where(g => g.Id != groupId).ToList();
+  }
 }

@@ -1,0 +1,63 @@
+﻿@using GroupTrip.Shared.Models
+@page "/groupdetails/{id}"
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+<h1>Group: @_group.Name</h1>
+
+@if (_group == null)
+{
+  <p><em>Loading...</em></p>
+}
+else
+{
+
+  <table class='table'>
+    <thead>
+    <tr>
+      <th></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>Name</td>
+      <td>@_group.Name</td>
+    </tr>
+    <tr>
+      <td>Trip</td>
+      <td>@_group.Trip.Location</td>
+    </tr>
+    <tr>
+      <td>Members</td>
+        @foreach (var person in _group.People)
+        {
+          <td>
+            @person.FirstName @person.LastName
+          </td>
+          <td>
+             <a onclick="@(async () => await DeletePerson(person.Id))">Remove</a>
+          </td>
+        }
+    </tr>
+    </tbody>
+  </table>
+}
+
+@functions {
+  [Parameter]
+  int id { get; set; }
+  Group _group;
+
+  protected override async Task OnInitAsync()
+  {
+    _group = await Http.GetJsonAsync<Group>("/api/Groups/Details/"+id);
+  }
+
+  async Task DeletePerson(int personId)
+  {
+    var url = "/api/Persons/Delete/" + id;
+    await Http.DeleteAsync(url);
+    _group.People = _group.People.Where(p => p.Id != personId).ToList();
+  }
+}
