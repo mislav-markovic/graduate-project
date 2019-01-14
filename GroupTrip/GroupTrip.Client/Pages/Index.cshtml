@@ -55,7 +55,7 @@ else
            <!-- Modal Header -->
            <div class="modal-header">
              <h4 class="modal-title">Create New Group</h4>
-             <button type="button" class="close" data-dismiss="modal">&times;</button>
+             <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
            </div>
 
            <!-- Modal body -->
@@ -67,7 +67,7 @@ else
 
            <!-- Modal footer -->
            <div class="modal-footer">
-             <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+             <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
              <button type="button" class="btn btn-primary" onclick="@AddGroup">Confirm</button>
            </div>
 
@@ -90,11 +90,7 @@ else
 
   protected async Task Reload()
   {
-    TripId = 0;
-    GroupName = "";
-    _tripsList = new Trip[0];
     _tripsList = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
-    StateHasChanged();
   }
 
   async Task Delete(int id)
@@ -118,12 +114,17 @@ else
     IsAdd = true;
   }
 
+  protected void CloseModal()
+  {
+    IsAdd = false;
+  }
+
   protected async Task AddGroup()
   {
+    CloseModal();
     var group = new Group();
     group.Name = GroupName;
-    IsAdd = false;
-    await Http.PostJsonAsync<Group>("api/Groups/Create/" + TripId, group);
+    await Http.SendJsonAsync(HttpMethod.Post, "api/Groups/Create", group);
     await Reload();
   }
 }

@@ -33,10 +33,10 @@ namespace GroupTrip.Server.Controllers
 
     // POST: Groups/Create
     [HttpPost]
-    [Route("api/Groups/Create/{tripId}")]
-    public void Create([FromBody] Group newGroup, int tripId)
+    [Route("api/Groups/Create")]
+    public void Create([FromBody] Group newGroup)
     {
-      _db.AddGroupToTrip(newGroup, tripId);
+      _db.AddGroupToTrip(newGroup);
     }
 
     // PUT: Groups/Edit

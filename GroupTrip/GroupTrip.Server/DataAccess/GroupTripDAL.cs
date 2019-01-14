@@ -43,9 +43,8 @@ namespace GroupTrip.Server.DataAccess
             _context.SaveChanges();
         }
 
-        public void AddGroupToTrip(Group group, int tripId)
+        public void AddGroupToTrip(Group group)
         {
-            group.TripId = tripId;
             _context.GroupDbSet.Add(group);
             _context.SaveChanges();
         }
