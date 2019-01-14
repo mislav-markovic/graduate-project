@@ -1,7 +1,129 @@
-﻿@page "/"
+﻿@using GroupTrip.Shared.Models
+@page "/tripsindex"
+@page "/"
+@inject HttpClient Http
+<h1>All Trips</h1>
+<p>
+  <a href="/addtrip">Create New</a>
+</p>
+@if (_tripsList == null)
+{
+  <p><em>Loading...</em></p>
+}
+else
+{
+  <table class='table'>
+    <thead>
+    <tr>
+      <th>Location</th>
+      <th>Description</th>
+      <th>Groups</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var trip in _tripsList)
+    {
+      <tr style="background-color:@(DateTime.Now > trip.EndDate ? "#EE9090" : "#90EE90")">
+        <td>@trip.Location</td>
+        <td>@trip.Description</td>
+        <td>
+          @foreach (var group in trip.Groups)
+          {
+            <a href='/groupdetails/@group.Id'>@group.Name</a><br />
+            <a onclick="@(async () => await DeleteGroup(group.Id))">Delete</a>
+          }
+        </td>
+        <td>@trip.StartDate</td>
+        <td>@trip.EndDate</td>
+        <td>
+          <button class="btn-info"><a href='/edittrip/@trip.Id'>?</a></button>
+          <button class="btn-danger" onclick="@(async () => await Delete(trip.Id))">x</button>
+          <button class="btn-info" onclick="@(() => ModalAddGroup(trip.Id))">+</button>
+        </td>
+      </tr>
+    }
+    </tbody>
+  </table>
 
-<h1>Hello, world!</h1>
+  if(IsAdd) { 
+     <div class="modal" tabindex="-1" style="display:block" role="dialog">
+       <div class="modal-dialog">
+         <div class="modal-content">
 
-Welcome to your new app.
+           <!-- Modal Header -->
+           <div class="modal-header">
+             <h4 class="modal-title">Create New Group</h4>
+             <button type="button" class="close" data-dismiss="modal">&times;</button>
+           </div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+           <!-- Modal body -->
+           <div class="modal-body">
+             <input type="hidden" id="tripId" bind=@TripId />
+             <label for="GroupName" class="control-label">Name</label>
+             <input for="GroupName" class="form-control" bind="@GroupName" />
+           </div>
+
+           <!-- Modal footer -->
+           <div class="modal-footer">
+             <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+             <button type="button" class="btn btn-primary" onclick="@AddGroup">Confirm</button>
+           </div>
+
+         </div>
+       </div>
+     </div>
+   }
+}
+@functions {
+  bool IsAdd;
+  Trip[] _tripsList;
+  int TripId;
+  string GroupName;
+
+  protected override async Task OnInitAsync()
+  {
+    IsAdd = false;
+    await Reload();
+  }
+
+  protected async Task Reload()
+  {
+    TripId = 0;
+    GroupName = "";
+    _tripsList = new Trip[0];
+    _tripsList = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
+    StateHasChanged();
+  }
+
+  async Task Delete(int id)
+  {
+    var url = "/api/Trips/Delete/" + id;
+    await Http.DeleteAsync(url);
+    _tripsList = _tripsList.Where(val => val.Id != id).ToArray();
+  }
+
+  async Task DeleteGroup(int groupId)
+  {
+    var url = "/api/Groups/Delete/" + groupId;
+    await Http.DeleteAsync(url);
+    var trip = _tripsList.First(t => t.Groups.Select(g => g.Id).Contains(groupId));
+    trip.Groups = trip.Groups.Where(g => g.Id != groupId).ToList();
+  }
+
+  protected void ModalAddGroup(int id)
+  {
+    TripId = id;
+    IsAdd = true;
+  }
+
+  protected async Task AddGroup()
+  {
+    var group = new Group();
+    group.Name = GroupName;
+    IsAdd = false;
+    await Http.PostJsonAsync<Group>("api/Groups/Create/" + TripId, group);
+    await Reload();
+  }
+}
