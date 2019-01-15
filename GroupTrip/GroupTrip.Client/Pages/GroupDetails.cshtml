@@ -16,28 +16,28 @@ else
 {
   <table class='table'>
     <thead>
-    <tr>
-      <th></th>
-      <th></th>
-    </tr>
+      <tr>
+        <th></th>
+        <th></th>
+      </tr>
     </thead>
     <tbody>
-    <tr>
-      <td>Name</td>
-      <td>@_group.Name</td>
-    </tr>
-    <tr>
-      <td>Trip</td>
-      <td>@_trip.Location</td>
-    </tr>
-    <tr>
-      <td>Total Expense</td>
-      <td>@_expense</td>
-    </tr>
-    <tr>
-      <td>Members  <button class="btn-info" onclick="@(() => ModalAddPerson())">+</button></td>
-      @foreach (var person in _members)
-      {
+      <tr>
+        <td>Name</td>
+        <td>@_group.Name</td>
+      </tr>
+      <tr>
+        <td>Trip</td>
+        <td>@_trip.Location</td>
+      </tr>
+      <tr>
+        <td>Total Expense</td>
+        <td>@_expense</td>
+      </tr>
+      <tr>
+        <td>Members  <button class="btn-info" onclick="@(() => ModalAddPerson())">+</button></td>
+        @foreach (var person in _members)
+        {
         <tr>
           <td>
             @person.FirstName @person.LastName
@@ -46,17 +46,20 @@ else
             To Pay: @(_expense / _members.Length)
           </td>
           <td>
-            <button class="btn-info" onclick="@(() => ModalAddPayment(person.Id))">+</button>
+            Amount by this person: @(_payments.Where(p => p.PersonId == person.Id).Select(p => p.Value).Sum())
+          </td>
+          <td>
+            <button class="btn-info" onclick="@(() => ModalAddPayment(person.Id))">Add Expense</button>
           </td>
           <td>
             <button class="btn-danger" onclick="@(async () => await DeletePerson(person.Id))">x</button>
           </td>
         </tr>
       }
-    </tr>
-    </tbody>
-  </table>
-}
+        </tr>
+      </tbody>
+    </table>
+  }
 
 @if (IsAddPerson)
 {
@@ -73,10 +76,10 @@ else
         <!-- Modal body -->
         <div class="modal-body">
           <label for="FirstName" class="control-label">First Name</label>
-          <input for="FirstName" class="form-control" bind="@_newPerson.FirstName"/>
+          <input for="FirstName" class="form-control" bind="@_newPerson.FirstName" />
 
           <label for="LastName" class="control-label">Last Name</label>
-          <input for="LastName" class="form-control" bind="@_newPerson.LastName"/>
+          <input for="LastName" class="form-control" bind="@_newPerson.LastName" />
         </div>
 
         <!-- Modal footer -->
@@ -104,9 +107,9 @@ else
 
         <!-- Modal body -->
         <div class="modal-body">
-          <input type="hidden" id="personId" bind=@_newPayment.PersonId/>
+          <input type="hidden" id="personId" bind=@_newPayment.PersonId />
           <label for="Value" class="control-label">Value</label>
-          <input for="Value" class="form-control" bind="@_newPayment.Value"/>
+          <input type="number" step="0.01" for="Value" class="form-control" bind="@_newPayment.Value" />
         </div>
 
         <!-- Modal footer -->
@@ -137,8 +140,6 @@ else
   Person _newPerson = new Person();
   Payment _newPayment = new Payment();
 
-  int _personId;
-
   protected override async Task OnInitAsync()
   {
     await Reload();
@@ -156,8 +157,9 @@ else
 
   async Task DeletePerson(int personId)
   {
-    var url = "/api/Persons/Delete/" + id;
+    var url = "api/Persons/Delete/" + id;
     await Http.DeleteAsync(url);
+    await Reload();
   }
 
   void CloseModal()
@@ -173,8 +175,8 @@ else
 
   void ModalAddPayment(int personId)
   {
+    _newPayment.PersonId = personId;
     IsAddPayment = true;
-    _personId = personId;
   }
 
   async Task AddPerson()
