@@ -112,7 +112,7 @@ namespace GroupTrip.Server.Migrations
             modelBuilder.Entity("GroupTrip.Shared.Models.Person", b =>
                 {
                     b.HasOne("GroupTrip.Shared.Models.Group", "Group")
-                        .WithMany("People")
+                        .WithMany("Persons")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

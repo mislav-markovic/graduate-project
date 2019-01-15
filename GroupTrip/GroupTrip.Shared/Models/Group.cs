@@ -6,13 +6,12 @@ namespace GroupTrip.Shared.Models
   {
     public Group()
     {
-      People = new List<Person>();
-      Trip = new Trip();
+      Persons = new List<Person>();
     }
 
     public int Id { get; set; }
     public string Name { get; set; }
-    public List<Person> People { get; set; }
+    public List<Person> Persons { get; set; }
     public int TripId { get; set; }
     public Trip Trip { get; set; }
   }

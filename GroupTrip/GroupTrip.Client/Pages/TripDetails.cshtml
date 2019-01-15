@@ -1,0 +1,60 @@
+﻿@using GroupTrip.Shared.Models
+@page "/tripdetails/{id:int}"
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+<h1>Trip: @_trip.Location</h1>
+
+@if (_trip == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <table class='table'>
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Description</td>
+                <td>@_trip.Description</td>
+            </tr>
+            <tr>
+                <td>Groups</td>
+                @foreach (var group in _trip.Groups)
+                {
+                    <td>
+                        <a href='/groupdetails/@group.Id'>@group.Name</a>
+                    </td>
+                    <td>
+                        <a onclick="@(async () => await DeleteGroup(group.Id))">Remove</a>
+                    </td>
+                }
+            </tr>
+        </tbody>
+    </table>
+}
+
+@functions {
+[Parameter]
+private int id { get; set; }
+
+Trip _trip;
+
+protected override async Task OnInitAsync()
+{
+    _trip = await Http.GetJsonAsync<Trip>("/api/Trips/Details/" + id);
+}
+
+async Task DeleteGroup(int groupId)
+{
+    var url = "/api/Groups/Delete/" + id;
+    await Http.DeleteAsync(url);
+    _trip.Groups = _trip.Groups.Where(p => p.Id != groupId).ToList();
+}
+}

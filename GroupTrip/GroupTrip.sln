@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupTrip.Server", "GroupTrip.Server\GroupTrip.Server.csproj", "{C16611D5-80D4-44EA-9E57-4F81B20BFFAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupTrip.Server", "GroupTrip.Server\GroupTrip.Server.csproj", "{C16611D5-80D4-44EA-9E57-4F81B20BFFAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupTrip.Client", "GroupTrip.Client\GroupTrip.Client.csproj", "{92C57A21-4DE8-4652-B877-759364141095}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupTrip.Client", "GroupTrip.Client\GroupTrip.Client.csproj", "{92C57A21-4DE8-4652-B877-759364141095}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupTrip.Shared", "GroupTrip.Shared\GroupTrip.Shared.csproj", "{734F0F1D-F77B-4092-B9AD-26033F755A39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroupTrip.Shared", "GroupTrip.Shared\GroupTrip.Shared.csproj", "{734F0F1D-F77B-4092-B9AD-26033F755A39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

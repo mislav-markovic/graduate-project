@@ -12,9 +12,14 @@ namespace GroupTrip.Server.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Person>().HasOne<Group>().WithMany(g => g.People);
-            //modelBuilder.Entity<Group>().HasOne(g => g.Trip).WithMany(t => t.Groups);
-            //modelBuilder.Entity<Payment>().HasOne(p => p.Person).WithMany(p => p.Payments);
+            modelBuilder.Entity<Person>().HasKey(p => p.Id);
+            modelBuilder.Entity<Group>().HasKey(p => p.Id);
+            modelBuilder.Entity<Payment>().HasKey(p => p.Id);
+            modelBuilder.Entity<Trip>().HasKey(p => p.Id);
+
+            modelBuilder.Entity<Person>().HasOne<Group>().WithMany(g => g.Persons).HasForeignKey(g=> g.GroupId);
+            modelBuilder.Entity<Group>().HasOne(g => g.Trip).WithMany(t => t.Groups).HasForeignKey(g => g.TripId);
+            modelBuilder.Entity<Payment>().HasOne(p => p.Person).WithMany(p => p.Payments).HasForeignKey(g => g.PersonId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

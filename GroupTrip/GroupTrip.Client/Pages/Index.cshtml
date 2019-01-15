@@ -1,7 +1,10 @@
 ﻿@page "/tripsindex"
 @page "/"
 @using GroupTrip.Shared.Models
+@using Microsoft.AspNetCore.Blazor.Services
 @inject HttpClient Http
+@inject IUriHelper UriHelper
+
 <h1>All Trips</h1>
 <p>
     <a href="/addtrip">Create New</a>
@@ -12,6 +15,12 @@
         <em>Loading...</em>
     </p>
 }
+else if (_tripsList.Length == 0)
+{
+    <p>
+        <em>No Trips</em>
+    </p>
+}
 else
 {
     <table class='table'>
@@ -19,7 +28,6 @@ else
         <tr>
             <th>Location</th>
             <th>Description</th>
-            <th>Groups</th>
             <th>Start Date</th>
             <th>End Date</th>
         </tr>
@@ -30,20 +38,11 @@ else
             <tr style="background-color: @(DateTime.Now > trip.EndDate ? "#EE9090" : "#90EE90")">
                 <td>@trip.Location</td>
                 <td>@trip.Description</td>
-                <td>
-                    @foreach (var group in trip.Groups)
-                    {
-                        <a href='/groupdetails/@group.Id'>@group.Name</a>
-                        <br/>
-                        <a onclick="@(async () => await DeleteGroup(group.Id))">Delete</a>
-                    }
-                </td>
+
                 <td>@trip.StartDate</td>
                 <td>@trip.EndDate</td>
                 <td>
-                    <button class="btn-info">
-                        <a href='/edittrip/@trip.Id'>?</a>
-                    </button>
+                    <button class="btn-info" onclick="@(() => GoToDetails(trip.Id))">?</button>
                     <button class="btn-danger" onclick="@(async () => await Delete(trip.Id))">x</button>
                     <button class="btn-info" onclick="@(() => ModalAddGroup(trip.Id))">+</button>
                 </td>
@@ -86,17 +85,24 @@ else
 @functions {
     bool IsAdd;
     Trip[] _tripsList;
-    Group Group = new Group();
+    readonly Group Group = new Group();
 
     protected override async Task OnInitAsync()
     {
         IsAdd = false;
-        Reload();
+        await Reload();
     }
 
-    void Reload()
+    void GoToDetails(int id)
     {
-        _tripsList = Http.GetJsonAsync<Trip[]>("/api/Trips/Index").Result;
+        UriHelper.NavigateTo("/tripdetails/"+id);
+    }
+
+    async Task Reload()
+    {
+        _tripsList = new Trip[0];
+        _tripsList = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
+        this.StateHasChanged();
     }
 
     async Task Delete(int id)
@@ -110,8 +116,7 @@ else
     {
         var url = "/api/Groups/Delete/" + groupId;
         await Http.DeleteAsync(url);
-        var trip = _tripsList.First(t => t.Groups.Select(g => g.Id).Contains(groupId));
-        trip.Groups = trip.Groups.Where(g => g.Id != groupId).ToList();
+        UriHelper.NavigateTo("/");
     }
 
     void ModalAddGroup(int id)
@@ -128,7 +133,7 @@ else
     void AddGroup()
     {
         Http.SendJsonAsync(HttpMethod.Post, "api/Groups/Create", Group);
-        CloseModal();
+        UriHelper.NavigateTo("/");
     }
 
 }

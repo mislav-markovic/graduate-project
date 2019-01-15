@@ -22,12 +22,14 @@ namespace GroupTrip.Server.DataAccess
 
         public IEnumerable<Trip> GetAllTrips()
         {
-            return _context.TripDbSet.Include(t => t.Groups).ToList();
+           // return _context.TripDbSet.Include(t => t.Groups).ToList();
+            return _context.TripDbSet.ToList();
         }
 
         public Trip GetTrip(int tripId)
         {
-            return _context.TripDbSet.Include(t => t.Groups).First(t => t.Id == tripId);
+            //return _context.TripDbSet.Include(t => t.Groups).First(t => t.Id == tripId);
+            return _context.TripDbSet.First(t => t.Id == tripId);
         }
 
         public void RemoveTrip(int tripId)
@@ -52,18 +54,18 @@ namespace GroupTrip.Server.DataAccess
 
         public IEnumerable<Group> GetAllGroups()
         {
-            return _context.GroupDbSet.Include(g => g.People).ThenInclude(p => p.Payments).ToList();
+            return _context.GroupDbSet.Include(g => g.Persons).ThenInclude(p => p.Payments).ToList();
         }
 
         public Group GetGroup(int groupId)
         {
-            return _context.GroupDbSet.Include(g => g.People).ThenInclude(p => p.Payments).First(g => g.Id == groupId);
+            return _context.GroupDbSet.Include(g => g.Persons).ThenInclude(p => p.Payments).First(g => g.Id == groupId);
         }
 
         public void RemoveGroup(int groupId)
         {
             var group = GetGroup(groupId);
-            foreach (var person in group.People)
+            foreach (var person in group.Persons)
             {
                 RemovePerson(person.Id);
             }

@@ -30,7 +30,7 @@ else
     </tr>
     <tr>
       <td>Members</td>
-        @foreach (var person in _group.People)
+        @foreach (var person in _group.Persons)
         {
           <td>
             @person.FirstName @person.LastName
@@ -58,6 +58,6 @@ else
   {
     var url = "/api/Persons/Delete/" + id;
     await Http.DeleteAsync(url);
-    _group.People = _group.People.Where(p => p.Id != personId).ToList();
+    _group.Persons = _group.Persons.Where(p => p.Id != personId).ToList();
   }
 }
