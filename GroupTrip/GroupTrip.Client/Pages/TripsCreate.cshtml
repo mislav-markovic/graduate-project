@@ -11,19 +11,19 @@
         <form>
             <div class="form-group">
                 <label for="Location" class="control-label">Location</label>
-                <input for="Location" class="form-control" bind="@trip.Location" />
+                <input for="Location" class="form-control" bind="@Trip.Location" />
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label">Description</label>
-                <input asp-for="Description" class="form-control" bind="@trip.Description" />
+                <input asp-for="Description" class="form-control" bind="@Trip.Description" />
             </div>
             <div class="form-group">
                 <label asp-for="StartDate" class="control-label">Start Date</label>
-                <input asp-for="StartDate" class="form-control" type="date" bind="@trip.StartDate" format-value="yyyy-MM-dd" />
+                <input asp-for="StartDate" class="form-control" type="date" bind="@Trip.StartDate" format-value="yyyy-MM-dd" />
             </div>
             <div class="form-group">
                 <label asp-for="EndDate" class="control-label">End Date</label>
-                <input asp-for="EndDate" class="form-control" type="date" bind="@trip.EndDate" format-value="yyyy-MM-dd" />
+                <input asp-for="EndDate" class="form-control" type="date" bind="@Trip.EndDate" format-value="yyyy-MM-dd" />
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-default" onclick="@(() => CreateTrip())">Save</button>
@@ -35,17 +35,16 @@
 
 @functions {
 
-    private Trip trip = new Trip();
+    private Trip Trip = new Trip();
 
     protected void CreateTrip()
     {
-        Http.SendJsonAsync(HttpMethod.Post, "/api/Trips/Create", trip);
-        StateHasChanged();
-        UriHelper.NavigateTo("tripsindex");
+        Http.SendJsonAsync(HttpMethod.Post, "/api/Trips/Create", Trip);
+        UriHelper.NavigateTo("/");
     }
 
     void Cancel()
     {
-        UriHelper.NavigateTo("tripsindex");
+        UriHelper.NavigateTo("/");
     }
 }

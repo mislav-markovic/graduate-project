@@ -22,12 +22,12 @@ namespace GroupTrip.Server.DataAccess
 
         public IEnumerable<Trip> GetAllTrips()
         {
-            return _context.TripDbSet.ToList();
+            return _context.TripDbSet.Include(t => t.Groups).ToList();
         }
 
         public Trip GetTrip(int tripId)
         {
-            return _context.TripDbSet.Find(tripId);
+            return _context.TripDbSet.Include(t => t.Groups).First(t => t.Id == tripId);
         }
 
         public void RemoveTrip(int tripId)
@@ -45,23 +45,29 @@ namespace GroupTrip.Server.DataAccess
 
         public void AddGroupToTrip(Group group)
         {
+            group.Trip = GetTrip(group.TripId);
             _context.GroupDbSet.Add(group);
             _context.SaveChanges();
         }
 
         public IEnumerable<Group> GetAllGroups()
         {
-            return _context.GroupDbSet.ToList();
+            return _context.GroupDbSet.Include(g => g.People).ThenInclude(p => p.Payments).ToList();
         }
 
         public Group GetGroup(int groupId)
         {
-            return _context.GroupDbSet.Find(groupId);
+            return _context.GroupDbSet.Include(g => g.People).ThenInclude(p => p.Payments).First(g => g.Id == groupId);
         }
 
         public void RemoveGroup(int groupId)
         {
-            var group = _context.GroupDbSet.Find(groupId);
+            var group = GetGroup(groupId);
+            foreach (var person in group.People)
+            {
+                RemovePerson(person.Id);
+            }
+
             _context.GroupDbSet.Remove(group);
             _context.SaveChanges();
         }
@@ -72,26 +78,31 @@ namespace GroupTrip.Server.DataAccess
             _context.SaveChanges();
         }
 
-        public void AddPersonToGroup(Person person, int groupId)
+        public void AddPersonToGroup(Person person)
         {
-            person.GroupId = groupId;
+            person.Group = GetGroup(person.GroupId);
             _context.PersonDbSet.Add(person);
             _context.SaveChanges();
         }
 
         public IEnumerable<Person> GetAllPeople()
         {
-            return _context.PersonDbSet.ToList();
+            return _context.PersonDbSet.Include(p => p.Payments).Include(p => p.Group).ToList();
         }
 
-        public Person GetPerson(int personID)
+        public Person GetPerson(int personId)
         {
-            return _context.PersonDbSet.Find(personID);
+            return _context.PersonDbSet.Include(p => p.Payments).Include(p => p.Group).First(p => p.Id == personId);
         }
 
         public void RemovePerson(int personId)
         {
-            var person = _context.PersonDbSet.Find(personId);
+            var person = GetPerson(personId);
+            foreach (var personPayment in person.Payments)
+            {
+                RemovePayment(personPayment.Id);
+            }
+
             _context.PersonDbSet.Remove(person);
             _context.SaveChanges();
         }
@@ -102,21 +113,21 @@ namespace GroupTrip.Server.DataAccess
             _context.SaveChanges();
         }
 
-        public void AddPayment(Payment payment, int personId)
+        public void AddPayment(Payment payment)
         {
-            payment.PersonId = personId;
+            payment.Person = GetPerson(payment.PersonId);
             _context.PaymentDbSet.Add(payment);
             _context.SaveChanges();
         }
 
         public IEnumerable<Payment> GetAllPayments()
         {
-            return _context.PaymentDbSet.ToList();
+            return _context.PaymentDbSet.Include(p => p.Person).ToList();
         }
 
         public Payment GetPayment(int paymentId)
         {
-            return _context.PaymentDbSet.Find(paymentId);
+            return _context.PaymentDbSet.Include(p => p.Person).First(p => p.Id == paymentId);
         }
 
         public void UpdatePayment(Payment updatedPayment)
