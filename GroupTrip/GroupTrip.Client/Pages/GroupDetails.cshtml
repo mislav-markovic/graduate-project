@@ -157,9 +157,11 @@ else
 
   async Task DeletePerson(int personId)
   {
-    var url = "api/Persons/Delete/" + id;
+    var url = "api/Persons/Delete/" + personId;
     await Http.DeleteAsync(url);
-    await Reload();
+    _members = _members.Where(m => m.Id != personId).ToArray();
+    _payments = _payments.Where(p => p.PersonId != personId).ToArray();
+    _expense = _payments.Select(p => p.Value).Sum();
   }
 
   void CloseModal()

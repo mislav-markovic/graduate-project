@@ -36,6 +36,10 @@ namespace GroupTrip.Server.DataAccess
     public void RemoveTrip(int tripId)
     {
       var trip = _context.TripDbSet.Find(tripId);
+      foreach (var group in GetAllGroups())
+      {
+        if(group.TripId == tripId) RemoveGroup(group.Id); 
+      }
       _context.TripDbSet.Remove(trip);
       _context.SaveChanges();
     }
@@ -71,6 +75,11 @@ namespace GroupTrip.Server.DataAccess
     public void RemoveGroup(int groupId)
     {
       var group = GetGroup(groupId);
+      foreach (var person in GetAllPeople())
+      {
+        if (person.GroupId == groupId) RemovePerson(person.Id);
+      }
+
       _context.GroupDbSet.Remove(group);
       _context.SaveChanges();
     }
@@ -100,6 +109,10 @@ namespace GroupTrip.Server.DataAccess
     public void RemovePerson(int personId)
     {
       var person = GetPerson(personId);
+      foreach (var payment in GetAllPayments())
+      {
+        if (payment.PersonId == personId) RemovePayment(payment.Id);
+      }
       _context.PersonDbSet.Remove(person);
       _context.SaveChanges();
     }
