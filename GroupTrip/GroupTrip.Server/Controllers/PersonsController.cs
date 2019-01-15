@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GroupTrip.Server.DataAccess;
 using GroupTrip.Shared.Models;
 using Microsoft.AspNetCore.Mvc;

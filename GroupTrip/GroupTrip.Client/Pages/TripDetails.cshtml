@@ -27,50 +27,51 @@ else
       <td>@_trip.Description</td>
     </tr>
     <tr>
-      <td>Groups <button class="btn-info" onclick="@(() => ModalAddGroup(_trip.Id))">+</button></td>
+      <td>Groups  <button class="btn-info" onclick="@(() => ModalAddGroup(_trip.Id))">+</button></td>
       @foreach (var group in _groups)
       {
-        <td>
-          <a href='/groupdetails/@group.Id'>@group.Name</a>
-        </td>
-        <td>
-          <button class="btn-danger" onclick="@(async () => await DeleteGroup(group.Id))">x</button>
-        </td>
+        <tr>
+          <td>
+            <a href='/groupdetails/@group.Id'>@group.Name</a>
+          </td>
+          <td>
+            <button class="btn-danger" onclick="@(async () => await DeleteGroup(group.Id))">x</button>
+          </td>
+        </tr>
       }
     </tr>
     </tbody>
   </table>
 }
 
-@if(IsAdd)
+@if (IsAdd)
 {
-<div class="modal" tabindex="-1" style="display: block" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
+  <div class="modal" tabindex="-1" style="display: block" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
 
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title">Create New Group</h4>
-        <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Create New Group</h4>
+          <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <input type="hidden" id="tripId" bind=@_group.TripId/>
+          <label for="GroupName" class="control-label">Name</label>
+          <input for="GroupName" class="form-control" bind="@_group.Name"/>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="@AddGroup">Confirm</button>
+        </div>
+
       </div>
-
-      <!-- Modal body -->
-      <div class="modal-body">
-        <input type="hidden" id="tripId" bind=@_group.TripId/>
-        <label for="GroupName" class="control-label">Name</label>
-        <input for="GroupName" class="form-control" bind="@_group.Name"/>
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="@AddGroup">Confirm</button>
-      </div>
-
     </div>
   </div>
-</div>
-}
 }
 
 @functions {
@@ -113,6 +114,7 @@ else
     CloseModal();
     await Http.SendJsonAsync(HttpMethod.Post, "api/Groups/Create", _group);
     _groups = await Http.GetJsonAsync<Group[]>("api/Groups/Index/" + id);
+    _group = new Group();
   }
 
 }
