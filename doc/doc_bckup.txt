@@ -37,17 +37,21 @@ Izvršavanje koda preuzetog s weba na klijentskoj strani zahtjeva odgovor na pit
 
 1.2	Kompatibilnost
 
-
+Jedan od ciljeva WebAssemblya je ostvariti kompatibilnost s postojećim tehnologijama za web razvoj. Primarno to znači da WebAssembly nema cilj zamijeniti JavaScript koji je do njegove pojave bio jedini jezik koji se mogao izvršavati na klijentskoj strani. Kako bi to ostvario WebAssembly podržava interoperabilnost s JavaScriptom, drugim riječima JavaScript funkcije moguće je pozivati iz WebAssembly te je moguće unutar JavaScrip koda izvršavati WebAssembly.
  
-2.	Tehničke značajke
+2.	Blazor
 
-
- 
-3.	Upute za korištenje
 
 
  
-4.	Literatura
+3.	GroupTrip
+
+ 
+
+4.	Zaključak
+
+ 
+5.	Literatura
 
 [1] 	»WebAssembly,« [Mrežno]. Available: https://en.wikipedia.org/wiki/WebAssembly. [Pokušaj pristupa 12 01 2019].
 [2] 	»WebAssembly High-Level Goals,« [Mrežno]. Available: https://webassembly.org. [Pokušaj pristupa 14 01 2019].
