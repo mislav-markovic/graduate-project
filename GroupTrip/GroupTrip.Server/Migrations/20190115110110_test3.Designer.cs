@@ -4,14 +4,16 @@ using GroupTrip.Server.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GroupTrip.Server.Migrations
 {
     [DbContext(typeof(GroupTripContext))]
-    partial class GroupTripContextModelSnapshot : ModelSnapshot
+    [Migration("20190115110110_test3")]
+    partial class test3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,6 +33,8 @@ namespace GroupTrip.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TripId");
+
                     b.ToTable("GroupDbSet");
                 });
 
@@ -46,6 +50,8 @@ namespace GroupTrip.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PersonId");
+
                     b.ToTable("PaymentDbSet");
                 });
 
@@ -59,9 +65,15 @@ namespace GroupTrip.Server.Migrations
 
                     b.Property<int>("GroupId");
 
+                    b.Property<int?>("GroupId1");
+
                     b.Property<string>("LastName");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("GroupId1");
 
                     b.ToTable("PersonDbSet");
                 });
@@ -83,6 +95,34 @@ namespace GroupTrip.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TripDbSet");
+                });
+
+            modelBuilder.Entity("GroupTrip.Shared.Models.Group", b =>
+                {
+                    b.HasOne("GroupTrip.Shared.Models.Trip", "Trip")
+                        .WithMany("Groups")
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GroupTrip.Shared.Models.Payment", b =>
+                {
+                    b.HasOne("GroupTrip.Shared.Models.Person", "Person")
+                        .WithMany("Payments")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GroupTrip.Shared.Models.Person", b =>
+                {
+                    b.HasOne("GroupTrip.Shared.Models.Group")
+                        .WithMany("Persons")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GroupTrip.Shared.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId1");
                 });
 #pragma warning restore 612, 618
         }

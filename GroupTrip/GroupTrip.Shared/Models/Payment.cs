@@ -5,6 +5,5 @@
         public int Id { get; set; }
         public double Value { get; set; }
         public int PersonId { get; set; }
-        public Person Person { get; set; }
     }
 }

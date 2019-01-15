@@ -31,6 +31,13 @@ namespace GroupTrip.Server.Controllers
       return _db.GetGroup(id);
     }
 
+    [HttpGet]
+    [Route("api/Groups/Index/{tripId}")]
+    public IEnumerable<Group> GroupsForTrip(int tripId)
+    {
+      return _db.GetGroupsForTrip(tripId);
+    }
+
     // POST: Groups/Create
     [HttpPost]
     [Route("api/Groups/Create")]

@@ -26,19 +26,10 @@ else
     </tr>
     <tr>
       <td>Trip</td>
-      <td>@_group.Trip.Location</td>
+      <td>@_trip.Location</td>
     </tr>
     <tr>
-      <td>Members</td>
-        @foreach (var person in _group.Persons)
-        {
-          <td>
-            @person.FirstName @person.LastName
-          </td>
-          <td>
-             <a onclick="@(async () => await DeletePerson(person.Id))">Remove</a>
-          </td>
-        }
+       <td>Members</td>
     </tr>
     </tbody>
   </table>
@@ -46,18 +37,19 @@ else
 
 @functions {
   [Parameter]
-  int id { get; set; }
-  Group _group;
+  string id { get; set; }
+  Group _group = new Group();
+  Trip _trip = new Trip();
 
   protected override async Task OnInitAsync()
   {
     _group = await Http.GetJsonAsync<Group>("/api/Groups/Details/"+id);
+    _trip = await Http.GetJsonAsync<Trip>("/api/Trips/Details/" + _group.TripId);
   }
 
   async Task DeletePerson(int personId)
   {
     var url = "/api/Persons/Delete/" + id;
     await Http.DeleteAsync(url);
-    _group.Persons = _group.Persons.Where(p => p.Id != personId).ToList();
   }
 }

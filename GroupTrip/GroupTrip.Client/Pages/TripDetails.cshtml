@@ -1,60 +1,65 @@
-﻿@using GroupTrip.Shared.Models
-@page "/tripdetails/{id:int}"
+﻿@page "/tripdetails/{id}"
+@using GroupTrip.Shared.Models
+@using Microsoft.AspNetCore.Blazor.Services
 @inject HttpClient Http
-@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+@inject IUriHelper UriHelper
 
 <h1>Trip: @_trip.Location</h1>
 
 @if (_trip == null)
 {
-    <p><em>Loading...</em></p>
+  <p>
+    <em>Loading...</em>
+  </p>
 }
 else
 {
-
-    <table class='table'>
-        <thead>
-            <tr>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Description</td>
-                <td>@_trip.Description</td>
-            </tr>
-            <tr>
-                <td>Groups</td>
-                @foreach (var group in _trip.Groups)
-                {
-                    <td>
-                        <a href='/groupdetails/@group.Id'>@group.Name</a>
-                    </td>
-                    <td>
-                        <a onclick="@(async () => await DeleteGroup(group.Id))">Remove</a>
-                    </td>
-                }
-            </tr>
-        </tbody>
-    </table>
+  <table class='table'>
+    <thead>
+    <tr>
+      <th></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>Description: </td>
+      <td>@_trip.Description</td>
+    </tr>
+    <tr>
+      <td>Groups</td>
+      @foreach (var group in _groups)
+      {
+        <td>
+          <a href='/groupdetails/@group.Id'>@group.Name</a>
+        </td>
+        <td>
+          <a onclick="@(async () => await DeleteGroup(group.Id))">Remove</a>
+        </td>
+      }
+    </tr>
+    </tbody>
+  </table>
 }
 
 @functions {
-[Parameter]
-private int id { get; set; }
 
-Trip _trip;
+  [Parameter]
+  private string id { get; set; }
 
-protected override async Task OnInitAsync()
-{
+  Trip _trip = new Trip();
+  Group[] _groups = new Group[0];
+
+  protected override async Task OnInitAsync()
+  {
     _trip = await Http.GetJsonAsync<Trip>("/api/Trips/Details/" + id);
-}
+    _groups = await Http.GetJsonAsync<Group[]>("api/Groups/Index/" + id);
+  }
 
-async Task DeleteGroup(int groupId)
-{
-    var url = "/api/Groups/Delete/" + id;
+  async Task DeleteGroup(int groupId)
+  {
+    var url = "/api/Groups/Delete/" + groupId;
     await Http.DeleteAsync(url);
-    _trip.Groups = _trip.Groups.Where(p => p.Id != groupId).ToList();
-}
+  }
+
 }
