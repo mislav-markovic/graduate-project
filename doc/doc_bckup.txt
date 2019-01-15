@@ -1,0 +1,59 @@
+Web Assembly
+Tehnička dokumentacija
+Verzija 1.0
+
+
+
+
+Studentski tim: Mislav Marković
+
+Nastavnik: prof. dr. sc. Krešimir Fertalj
+
+
+
+
+
+
+
+
+ 
+Sadržaj
+1.	Opis razvijenog proizvoda	4
+2.	Tehničke značajke	5
+3.	Upute za korištenje	6
+4.	Literatura	7
+ 
+Tehnička dokumentacija
+
+ 
+1.	Opis razvijenog proizvoda
+
+WebAssembly (skraćeno WASM) je web standard kojim se definira binarni format i odgovarajući jezik sličan asembleru namijenjen za izvršavanje u web stranicama  [1]. Standard je razvijen od strane World Wide Web Consortiuma (W3C). Danas WebAssembly je podržan od strane 4 popularnih web preglednika, Mozzila Firefox, Google Chrome, Microsoft Edge i Apple Safari. Ciljevi koje standard želi ostvariti su portabilni binarni format, interoperabilnost s JavaScriptom, integracija s postojećim web platformama, sigurno izvršavanje unutar web preglednika  [2]. Programski jezici koji podržavaju prevođenje programskog koda u binarni format definiran WebAssemblyem su C, C++ i Rust. C i C++ se prevode pomoću Emscripten alata [3]. Rust se s odgovarajućom verzijom istog alata prevodi u WASM format.
+WebAssembly će utjecati na razvoj web aplikacija na dva načina. Prvi utjecaj će biti na postojeće radne okvire i programske jezike koji se koriste za web razvoj. Ovaj utjecaj je već vidljiv pojavom novih radnih okvira kao što je Blazor. Drugi utjecaj je otvaranja novih područja koja će postati moguće ostvariti pomoću web aplikacija umjesto desktop aplikacija. Neka od mogućih područja primjena su područja koja zahtjevaju optimizirani kod kako bi brzo i učinkovito obavili proračune, neki primjeri ovih područja su obrada slike, zvuka i videa ili simulacija virtualne stvarnosti niske latentnosti.
+
+1.1	Sigurnost
+
+Izvršavanje koda preuzetog s weba na klijentskoj strani zahtjeva odgovor na pitanje koliko je klijent siguran u toj situaciji od zloćudnog ili neispravnog koda. Sigurnost za korisnika koji izvršava WebAssembly kod osigurava se na način da se izvršavanje koda odvija unutar sigurnosnog okvira okruženja (eng. sandboxed enviroment). Sigurnosni okvir izolira izvršavajući kod od klijenta  [4]. Svaka aplikacija izvršava se zasebno i ne može izaći van granica sigurnosnog okvira bez korištenja postojećeg APIja. Dodatno, danas je izvršavanje WASM koda determinističko, ali buduće verzije standarda koje će podržavati dretve neće nužno biti.
+
+1.2	Kompatibilnost
+
+
+ 
+2.	Tehničke značajke
+
+
+ 
+3.	Upute za korištenje
+
+
+ 
+4.	Literatura
+
+[1] 	»WebAssembly,« [Mrežno]. Available: https://en.wikipedia.org/wiki/WebAssembly. [Pokušaj pristupa 12 01 2019].
+[2] 	»WebAssembly High-Level Goals,« [Mrežno]. Available: https://webassembly.org. [Pokušaj pristupa 14 01 2019].
+
+
+
+
+
+
