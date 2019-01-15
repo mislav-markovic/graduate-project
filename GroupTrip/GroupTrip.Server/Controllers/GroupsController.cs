@@ -31,11 +31,28 @@ namespace GroupTrip.Server.Controllers
       return _db.GetGroup(id);
     }
 
+    //returns groups for one trip
     [HttpGet]
     [Route("api/Groups/Index/{tripId}")]
     public IEnumerable<Group> GroupsForTrip(int tripId)
     {
       return _db.GetGroupsForTrip(tripId);
+    }
+
+    //returns members of one group
+    [HttpGet]
+    [Route("api/Groups/Members/{groupId}")]
+    public IEnumerable<Person> GetGroupMembers(int groupId)
+    {
+      return _db.GetGroupMembers(groupId);
+    }
+
+    //returns payments for one group
+    [HttpGet]
+    [Route("api/Groups/Payments/{groupId}")]
+    public IEnumerable<Payment> GetGroupExpenses(int groupId)
+    {
+      return _db.GetPaymentsForGroup(groupId);
     }
 
     // POST: Groups/Create

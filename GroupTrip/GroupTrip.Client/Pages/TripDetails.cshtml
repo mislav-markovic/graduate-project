@@ -27,19 +27,50 @@ else
       <td>@_trip.Description</td>
     </tr>
     <tr>
-      <td>Groups</td>
+      <td>Groups <button class="btn-info" onclick="@(() => ModalAddGroup(_trip.Id))">+</button></td>
       @foreach (var group in _groups)
       {
         <td>
           <a href='/groupdetails/@group.Id'>@group.Name</a>
         </td>
         <td>
-          <a onclick="@(async () => await DeleteGroup(group.Id))">Remove</a>
+          <button class="btn-danger" onclick="@(async () => await DeleteGroup(group.Id))">x</button>
         </td>
       }
     </tr>
     </tbody>
   </table>
+}
+
+@if(IsAdd)
+{
+<div class="modal" tabindex="-1" style="display: block" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Create New Group</h4>
+        <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <input type="hidden" id="tripId" bind=@_group.TripId/>
+        <label for="GroupName" class="control-label">Name</label>
+        <input for="GroupName" class="form-control" bind="@_group.Name"/>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="@AddGroup">Confirm</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+}
 }
 
 @functions {
@@ -49,9 +80,12 @@ else
 
   Trip _trip = new Trip();
   Group[] _groups = new Group[0];
+  bool IsAdd;
+  Group _group = new Group();
 
   protected override async Task OnInitAsync()
   {
+    IsAdd = false;
     _trip = await Http.GetJsonAsync<Trip>("/api/Trips/Details/" + id);
     _groups = await Http.GetJsonAsync<Group[]>("api/Groups/Index/" + id);
   }
@@ -59,7 +93,26 @@ else
   async Task DeleteGroup(int groupId)
   {
     var url = "/api/Groups/Delete/" + groupId;
+    _groups = _groups.Where(g => g.Id != groupId).ToArray();
     await Http.DeleteAsync(url);
+  }
+
+  void ModalAddGroup(int id)
+  {
+    _group.TripId = id;
+    IsAdd = true;
+  }
+
+  void CloseModal()
+  {
+    IsAdd = false;
+  }
+
+  async Task AddGroup()
+  {
+    CloseModal();
+    await Http.SendJsonAsync(HttpMethod.Post, "api/Groups/Create", _group);
+    _groups = await Http.GetJsonAsync<Group[]>("api/Groups/Index/" + id);
   }
 
 }

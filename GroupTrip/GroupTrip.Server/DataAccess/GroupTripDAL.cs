@@ -110,6 +110,11 @@ namespace GroupTrip.Server.DataAccess
       _context.SaveChanges();
     }
 
+    public IEnumerable<Person> GetGroupMembers(int groupId)
+    {
+      return _context.PersonDbSet.Where(p => p.GroupId == groupId);
+    }
+
     public void AddPayment(Payment payment)
     {
       _context.PaymentDbSet.Add(payment);
@@ -119,6 +124,24 @@ namespace GroupTrip.Server.DataAccess
     public IEnumerable<Payment> GetAllPayments()
     {
       return _context.PaymentDbSet.ToList();
+    }
+
+    public IEnumerable<Payment> GetPaymentsForPerson(int personId)
+    {
+      return _context.PaymentDbSet.Where(p => p.PersonId == personId);
+    }
+
+    public IEnumerable<Payment> GetPaymentsForGroup(int groupId)
+    {
+      var people = GetGroupMembers(groupId);
+      var payments = new List<Payment>();
+
+      foreach (var personId in people.Select(p => p.Id))
+      {
+        payments.AddRange(GetPaymentsForPerson(personId));
+      }
+
+      return payments;
     }
 
     public Payment GetPayment(int paymentId)
