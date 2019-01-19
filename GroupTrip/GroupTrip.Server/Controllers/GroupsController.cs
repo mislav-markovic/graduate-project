@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GroupTrip.Server.DataAccess;
 using GroupTrip.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +48,16 @@ namespace GroupTrip.Server.Controllers
       return _db.GetGroupMembers(groupId);
     }
 
-    //returns payments for one group
+    //returns members of one group
     [HttpGet]
+    [Route("api/Groups/NonMembers/{groupId}")]
+    public IEnumerable<Person> GetGroupNonMembers(int groupId)
+    {
+      return _db.GetPeopleNotInGroup(groupId);
+    }
+
+        //returns payments for one group
+        [HttpGet]
     [Route("api/Groups/Payments/{groupId}")]
     public IEnumerable<Payment> GetGroupExpenses(int groupId)
     {
@@ -71,6 +80,15 @@ namespace GroupTrip.Server.Controllers
       _db.UpdateGroup(updatedGroup);
     }
 
+    // PUT: Groups/Edit
+    [HttpPut]
+    [Route("api/Groups/AddMember/{groupId}")]
+    public void AddMember(int groupId, [FromBody] int personId)
+    {
+      var person = _db.GetPerson(personId);
+      _db.AddPersonToGroup(person, groupId);
+    }
+        
     // DELETE: Groups/Delete/5
     [HttpDelete]
     [Route("api/Groups/Delete/{id}")]
@@ -78,5 +96,13 @@ namespace GroupTrip.Server.Controllers
     {
       _db.RemoveGroup(id);
     }
-  }
+
+    // DELETE: Groups/Delete/5
+    [HttpDelete]
+    [Route("api/Groups/RemoveFromGroup/{groupId}")]
+    public void Delete(int groupId, [FromBody] int personId)
+    {
+      _db.RemovePersonFromGroup(groupId, personId);
+    }
+    }
 }

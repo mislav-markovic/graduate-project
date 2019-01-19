@@ -7,70 +7,77 @@
 
 <h1>All Trips</h1>
 <p>
-  <a href="/addtrip">Create New</a>
+    <a href="/addtrip">Create New</a>
 </p>
-@if (_tripsList == null)
+@if (_allTrips == null)
 {
-  <p>
-    <em>Loading...</em>
-  </p>
+    <p>
+        <em>Loading...</em>
+    </p>
 }
-else if (_tripsList.Length == 0)
+else if (_allTrips.Length == 0)
 {
-  <p>
-    <em>No Trips</em>
-  </p>
+    <p>
+        <em>No Trips</em>
+    </p>
 }
 else
 {
-  <table class='table'>
-    <thead>
-    <tr>
-      <th>Location</th>
-      <th>Description</th>
-      <th>Start Date</th>
-      <th>End Date</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var trip in _tripsList)
-    {
-      <tr style="background-color: @(DateTime.Now > trip.EndDate ? "#EE9090" : "#90EE90")">
-        <td>@trip.Location</td>
-        <td>@trip.Description</td>
-        <td>@trip.StartDate</td>
-        <td>@trip.EndDate</td>
-        <td>
-          <NavLink href=@("/tripdetails/" + trip.Id)>
-            Details
-          </NavLink>
-          <button class="btn-danger" onclick="@(async () => await Delete(trip.Id))">x</button>
-        </td>
-      </tr>
-    }
-    </tbody>
-  </table>
+    <button class="btn-info" onclick="@ToggleExpired">Toggle Expired Trips</button>
+    <table class='table'>
+        <thead>
+        <tr>
+            <th>Location</th>
+            <th>Description</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var trip in _allTrips.Where(t => DateTime.Now <= t.EndDate || _showExpired))
+        {
+            <tr style="background-color: @(DateTime.Now > trip.EndDate ? "#EE9090" : "#90EE90")">
+                <td>@trip.Location</td>
+                <td>@trip.Description</td>
+                <td>@trip.StartDate.ToShortDateString()</td>
+                <td>@trip.EndDate.ToShortDateString()</td>
+                <td>
+                    <NavLink href=@("/tripdetails/" + trip.Id)>
+                        Details
+                    </NavLink>
+                    <button class="btn-danger" onclick="@(async () => await Delete(trip.Id))">x</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
 
 @functions {
-  Trip[] _tripsList;
+    Trip[] _allTrips;
+    bool _showExpired = true;
 
-  protected override async Task OnInitAsync()
-  {
-    await Reload();
-  }
+    protected override async Task OnInitAsync()
+    {
+        await Reload();
+    }
 
-  async Task Reload()
-  {
-    _tripsList = new Trip[0];
-    _tripsList = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
-  }
+    async Task Reload()
+    {
+        _allTrips = new Trip[0];
+        _allTrips = await Http.GetJsonAsync<Trip[]>("/api/Trips/Index");
+    }
 
-  async Task Delete(int id)
-  {
-    var url = "/api/Trips/Delete/" + id;
-    await Http.DeleteAsync(url);
-    _tripsList = _tripsList.Where(val => val.Id != id).ToArray();
-  }
+    async Task Delete(int id)
+    {
+        var url = "/api/Trips/Delete/" + id;
+        await Http.DeleteAsync(url);
+        _allTrips = _allTrips.Where(val => val.Id != id).ToArray();
+    }
 
+    void ToggleExpired()
+    {
+        _showExpired = !_showExpired;
+        StateHasChanged();
+    }
 }

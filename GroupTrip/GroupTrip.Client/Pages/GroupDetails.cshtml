@@ -1,4 +1,4 @@
-﻿@page "/groupdetails/{id}"
+﻿@page "/groupdetails/{Id}"
 @using GroupTrip.Shared.Models
 @using Microsoft.AspNetCore.Blazor.Services
 @inject HttpClient Http
@@ -8,195 +8,247 @@
 
 @if (_group == null)
 {
-  <p>
-    <em>Loading...</em>
-  </p>
+    <p>
+        <em>Loading...</em>
+    </p>
 }
 else
 {
-  <table class='table'>
-    <thead>
-      <tr>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Name</td>
-        <td>@_group.Name</td>
-      </tr>
-      <tr>
-        <td>Trip</td>
-        <td>@_trip.Location</td>
-      </tr>
-      <tr>
-        <td>Total Expense</td>
-        <td>@_expense</td>
-      </tr>
-      <tr>
-        <td>Members  <button class="btn-info" onclick="@(() => ModalAddPerson())">+</button></td>
-        @foreach (var person in _members)
-        {
+    <button class="btn-info" onclick="@(() => ModalAddExistingPerson())">Add Existing Person as Member</button>
+    <table class='table'>
+        <thead>
         <tr>
-          <td>
-            @person.FirstName @person.LastName
-          </td>
-          <td>
-            To Pay: @(_expense / _members.Length)
-          </td>
-          <td>
-            Amount by this person: @(_payments.Where(p => p.PersonId == person.Id).Select(p => p.Value).Sum())
-          </td>
-          <td>
-            <button class="btn-info" onclick="@(() => ModalAddPayment(person.Id))">Add Expense</button>
-          </td>
-          <td>
-            <button class="btn-danger" onclick="@(async () => await DeletePerson(person.Id))">x</button>
-          </td>
+            <th></th>
+            <th></th>
         </tr>
-      }
+        </thead>
+        <tbody>
+        <tr>
+            <td>Trip</td>
+            <td>
+                <NavLink href=@("/tripdetails/" + _trip.Id)>@_trip.Location</NavLink>
+            </td>
         </tr>
-      </tbody>
+        <tr>
+            <td>Total Expense</td>
+            <td>@_expense</td>
+        </tr>
+        <tr>
+            <td>Members <button class="btn-info" onclick="@(() => ModalAddPerson())">+</button></td>
+            @foreach (var person in _members)
+            {
+                <tr>
+                    <td>
+                        @person.FirstName @person.LastName
+                    </td>
+                    <td>
+                        To Pay: @(_expense / _members.Length)
+                    </td>
+                    <td>
+                        Amount spent by this person: @(_payments.Where(p => p.PersonId == person.Id).Select(p => p.Value).Sum())
+                    </td>
+                    <td>
+                        <button class="btn-info" onclick="@(() => ModalAddPayment(person.Id))">Add Expense</button>
+                    </td>
+                    <td>
+                        <button class="btn-danger" onclick="@(async () => await DeletePerson(person.Id))">x</button>
+                    </td>
+                </tr>
+            }
+        </tr>
+        </tbody>
     </table>
-  }
-
-@if (IsAddPerson)
-{
-  <div class="modal" tabindex="-1" style="display: block" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Create New Group</h4>
-          <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="modal-body">
-          <label for="FirstName" class="control-label">First Name</label>
-          <input for="FirstName" class="form-control" bind="@_newPerson.FirstName" />
-
-          <label for="LastName" class="control-label">Last Name</label>
-          <input for="LastName" class="form-control" bind="@_newPerson.LastName" />
-        </div>
-
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="@AddPerson">Confirm</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
 }
 
-@if (IsAddPayment)
+@if (_isAddPerson)
 {
-  <div class="modal" tabindex="-1" style="display: block" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
+    <div class="modal" tabindex="-1" style="display: block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
 
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Create New Group</h4>
-          <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add New Person to Group</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label for="FirstName" class="control-label">First Name</label>
+                    <input for="FirstName" class="form-control" bind="@_newPerson.FirstName"/>
+
+                    <label for="LastName" class="control-label">Last Name</label>
+                    <input for="LastName" class="form-control" bind="@_newPerson.LastName"/>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="@AddPerson">Confirm</button>
+                </div>
+
+            </div>
         </div>
-
-        <!-- Modal body -->
-        <div class="modal-body">
-          <input type="hidden" id="personId" bind=@_newPayment.PersonId />
-          <label for="Value" class="control-label">Value</label>
-          <input type="number" step="0.01" for="Value" class="form-control" bind="@_newPayment.Value" />
-        </div>
-
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="@AddPayment">Confirm</button>
-        </div>
-
-      </div>
     </div>
-  </div>
+}
+
+@if (_isAddPayment)
+{
+    <div class="modal" tabindex="-1" style="display: block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Payment</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <input type="hidden" id="personId" bind=@_newPayment.PersonId/>
+                    <label for="Value" class="control-label">Value</label>
+                    <input type="number" step="0.01" for="Value" class="form-control" bind="@_newPayment.Value"/>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="@AddPayment">Confirm</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@if (_isAddExistingPerson)
+{
+    <div class="modal" tabindex="-1" style="display: block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Existing Person to Group</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <select class="form-control" bind="@_selectedPerson">
+                        <option value="">-- Select Person --</option>
+                        @foreach (var person in _existingPeopleNonMembers)
+                        {
+                            <option value="@person.Id">@person.FirstName @person.LastName</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="@AddExistingPerson">Confirm</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 }
 
 @functions {
 
-  [Parameter]
-  string id { get; set; }
+    [Parameter]
+    string Id { get; set; }
 
-  Group _group = new Group();
-  Trip _trip = new Trip();
-  Person[] _members = new Person[0];
-  Payment[] _payments = new Payment[0];
-  double _expense;
+    Group _group = new Group();
+    Trip _trip = new Trip();
+    Person[] _members = new Person[0];
+    Person[] _existingPeopleNonMembers = new Person[0];
+    Payment[] _payments = new Payment[0];
+    double _expense;
 
-  bool IsAddPerson;
-  bool IsAddPayment;
+    bool _isAddPerson;
+    bool _isAddPayment;
+    bool _isAddExistingPerson;
 
-  Person _newPerson = new Person();
-  Payment _newPayment = new Payment();
+    Person _newPerson = new Person();
+    Payment _newPayment = new Payment();
+    int _selectedPerson;
 
-  protected override async Task OnInitAsync()
-  {
-    await Reload();
-  }
+    protected override async Task OnInitAsync()
+    {
+        await Reload();
+    }
 
-  async Task Reload()
-  {
-    _group = await Http.GetJsonAsync<Group>("/api/Groups/Details/" + id);
-    _trip = await Http.GetJsonAsync<Trip>("/api/Trips/Details/" + _group.TripId);
-    _members = await Http.GetJsonAsync<Person[]>("/api/Groups/Members/" + _group.Id);
-    _payments = await Http.GetJsonAsync<Payment[]>("/api/Groups/Payments/" + _group.Id);
-    _expense = _payments.Select(p => p.Value).Sum();
-    _newPerson.GroupId = _group.Id;
-  }
+    async Task Reload()
+    {
+        _group = await Http.GetJsonAsync<Group>("api/Groups/Details/" + Id);
+        _trip = await Http.GetJsonAsync<Trip>("api/Trips/Details/" + _group.TripId);
+        _members = await Http.GetJsonAsync<Person[]>("api/Groups/Members/" + _group.Id);
+        _payments = await Http.GetJsonAsync<Payment[]>("api/Groups/Payments/" + _group.Id);
+        _existingPeopleNonMembers = await Http.GetJsonAsync<Person[]>("api/Groups/NonMembers/" + _group.Id);
+        _expense = _payments.Select(p => p.Value).Sum();
+        _newPayment = new Payment {GroupId = _group.Id};
+    }
 
-  async Task DeletePerson(int personId)
-  {
-    var url = "api/Persons/Delete/" + personId;
-    await Http.DeleteAsync(url);
-    _members = _members.Where(m => m.Id != personId).ToArray();
-    _payments = _payments.Where(p => p.PersonId != personId).ToArray();
-    _expense = _payments.Select(p => p.Value).Sum();
-  }
+    async Task DeletePerson(int personId)
+    {
+        var url = "api/Groups/RemoveFromGroup/" + _group.Id;
+        await Http.SendJsonAsync(HttpMethod.Delete, url, personId);
+        _members = _members.Where(m => m.Id != personId).ToArray();
+    }
 
-  void CloseModal()
-  {
-    IsAddPayment = false;
-    IsAddPerson = false;
-  }
+    void CloseModal()
+    {
+        _isAddPayment = false;
+        _isAddPerson = false;
+        _isAddExistingPerson = false;
+    }
 
-  void ModalAddPerson()
-  {
-    IsAddPerson = true;
-  }
+    void ModalAddPerson()
+    {
+        _isAddPerson = true;
+    }
 
-  void ModalAddPayment(int personId)
-  {
-    _newPayment.PersonId = personId;
-    IsAddPayment = true;
-  }
+    void ModalAddExistingPerson()
+    {
+        _selectedPerson = -1;
+        _isAddExistingPerson = true;
+    }
 
-  async Task AddPerson()
-  {
-    CloseModal();
-    _newPerson.GroupId = _group.Id;
-    await Http.SendJsonAsync(HttpMethod.Post, "api/Persons/Create", _newPerson);
-    _members = await Http.GetJsonAsync<Person[]>("/api/Groups/Members/" + _group.Id);
-    _newPerson = new Person();
-  }
+    void ModalAddPayment(int personId)
+    {
+        _isAddPayment = true;
+        _newPayment.PersonId = personId;
+        StateHasChanged();
+    }
 
-  async Task AddPayment()
-  {
-    CloseModal();
-    await Http.SendJsonAsync(HttpMethod.Post, "api/Payments/Create", _newPayment);
-    _payments = await Http.GetJsonAsync<Payment[]>("/api/Groups/Payments/" + _group.Id);
-    _expense = _payments.Select(p => p.Value).Sum();
-    _newPayment = new Payment();
-  }
+    async Task AddPerson()
+    {
+        CloseModal();
+        await Http.SendJsonAsync(HttpMethod.Post, "api/Persons/Create/" + _group.Id, _newPerson);
+        _members = await Http.GetJsonAsync<Person[]>("api/Groups/Members/" + _group.Id);
+        _newPerson = new Person();
+    }
+
+    async Task AddExistingPerson()
+    {
+        CloseModal();
+        var person = _existingPeopleNonMembers.First(p => p.Id == _selectedPerson);
+        await Http.SendJsonAsync(HttpMethod.Put, "api/Groups/AddMember/" + _group.Id, person.Id);
+        _members = _members.ToList().Append(person).ToArray();
+        _existingPeopleNonMembers = _existingPeopleNonMembers.Where(p => p.Id != _selectedPerson).ToArray();
+        _selectedPerson = -1;
+    }
+
+    async Task AddPayment()
+    {
+        CloseModal();
+        await Http.SendJsonAsync(HttpMethod.Post, "api/Payments/Create", _newPayment);
+        _payments = await Http.GetJsonAsync<Payment[]>("api/Groups/Payments/" + _group.Id);
+        _expense = _payments.Select(p => p.Value).Sum();
+        _newPayment = new Payment {GroupId = _group.Id};
+    }
 
 }

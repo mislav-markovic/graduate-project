@@ -37,9 +37,8 @@ namespace GroupTrip.Server.DataAccess
     {
       var trip = _context.TripDbSet.Find(tripId);
       foreach (var group in GetAllGroups())
-      {
-        if(group.TripId == tripId) RemoveGroup(group.Id); 
-      }
+        if (group.TripId == tripId)
+          RemoveGroup(group.Id);
       _context.TripDbSet.Remove(trip);
       _context.SaveChanges();
     }
@@ -75,12 +74,35 @@ namespace GroupTrip.Server.DataAccess
     public void RemoveGroup(int groupId)
     {
       var group = GetGroup(groupId);
-      foreach (var person in GetAllPeople())
-      {
-        if (person.GroupId == groupId) RemovePerson(person.Id);
-      }
-
+      RemovePersonGroupByGroup(groupId);
       _context.GroupDbSet.Remove(group);
+      _context.SaveChanges();
+    }
+
+    public void RemovePersonFromGroup(int groupId, int personId)
+    {
+      var pgs = _context.PersonGroupDbSet.Where(pg => pg.GroupId == groupId && pg.PersonId == personId);
+
+      foreach (var pg in pgs) _context.Remove(pg);
+
+      _context.SaveChanges();
+    }
+
+    public void RemovePersonGroupByGroup(int groupId)
+    {
+      var pgs = _context.PersonGroupDbSet.Where(pg => pg.GroupId == groupId);
+
+      foreach (var pg in pgs) _context.Remove(pg);
+
+      _context.SaveChanges();
+    }
+
+    public void RemovePersonGroupByPerson(int personId)
+    {
+      var pgs = _context.PersonGroupDbSet.Where(pg => pg.GroupId == personId);
+
+      foreach (var pg in pgs) _context.Remove(pg);
+
       _context.SaveChanges();
     }
 
@@ -90,9 +112,18 @@ namespace GroupTrip.Server.DataAccess
       _context.SaveChanges();
     }
 
-    public void AddPersonToGroup(Person person)
+    public void AddPersonToGroup(Person person, int groupId)
     {
-      _context.PersonDbSet.Add(person);
+      var find = _context.PersonDbSet.Find(person.Id);
+
+      if (find == null)
+      {
+        _context.PersonDbSet.Add(person);
+        _context.SaveChanges();
+      }
+
+      var personGroup = new PersonGroup {GroupId = groupId, PersonId = person.Id};
+      _context.PersonGroupDbSet.Add(personGroup);
       _context.SaveChanges();
     }
 
@@ -106,13 +137,16 @@ namespace GroupTrip.Server.DataAccess
       return _context.PersonDbSet.First(p => p.Id == personId);
     }
 
+    public IEnumerable<Person> GetPeopleNotInGroup(int groupId)
+    {
+      var members = _context.PersonGroupDbSet.Where(pg => pg.GroupId == groupId).Select(pg => pg.PersonId).ToList();
+
+      return _context.PersonDbSet.Where(p => !members.Contains(p.Id));
+    }
+
     public void RemovePerson(int personId)
     {
       var person = GetPerson(personId);
-      foreach (var payment in GetAllPayments())
-      {
-        if (payment.PersonId == personId) RemovePayment(payment.Id);
-      }
       _context.PersonDbSet.Remove(person);
       _context.SaveChanges();
     }
@@ -125,7 +159,8 @@ namespace GroupTrip.Server.DataAccess
 
     public IEnumerable<Person> GetGroupMembers(int groupId)
     {
-      return _context.PersonDbSet.Where(p => p.GroupId == groupId);
+      var members = _context.PersonGroupDbSet.Where(pg => pg.GroupId == groupId).Select(pg => pg.PersonId);
+      return _context.PersonDbSet.Where(p => members.Contains(p.Id));
     }
 
     public void AddPayment(Payment payment)
@@ -146,15 +181,7 @@ namespace GroupTrip.Server.DataAccess
 
     public IEnumerable<Payment> GetPaymentsForGroup(int groupId)
     {
-      var people = GetGroupMembers(groupId);
-      var payments = new List<Payment>();
-
-      foreach (var personId in people.Select(p => p.Id))
-      {
-        payments.AddRange(GetPaymentsForPerson(personId));
-      }
-
-      return payments;
+      return _context.PaymentDbSet.Where(p => p.GroupId == groupId);
     }
 
     public Payment GetPayment(int paymentId)
