@@ -40,9 +40,7 @@ namespace GroupTrip.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("GroupId");
-
-                    b.Property<int?>("PersonId");
+                    b.Property<int>("PersonId");
 
                     b.Property<double>("Value");
 
@@ -59,26 +57,13 @@ namespace GroupTrip.Server.Migrations
 
                     b.Property<string>("FirstName");
 
+                    b.Property<int>("GroupId");
+
                     b.Property<string>("LastName");
 
                     b.HasKey("Id");
 
                     b.ToTable("PersonDbSet");
-                });
-
-            modelBuilder.Entity("GroupTrip.Shared.Models.PersonGroup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("GroupId");
-
-                    b.Property<int>("PersonId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PersonGroupDbSet");
                 });
 
             modelBuilder.Entity("GroupTrip.Shared.Models.Trip", b =>
