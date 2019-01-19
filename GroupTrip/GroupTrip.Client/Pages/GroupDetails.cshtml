@@ -196,7 +196,10 @@ else
     {
         var url = "api/Groups/RemoveFromGroup/" + _group.Id;
         await Http.SendJsonAsync(HttpMethod.Delete, url, personId);
+        var deletedPerson = _members.First(p => p.Id == personId);
+        _existingPeopleNonMembers = _existingPeopleNonMembers.Append(deletedPerson).ToArray();
         _members = _members.Where(m => m.Id != personId).ToArray();
+        
     }
 
     void CloseModal()
