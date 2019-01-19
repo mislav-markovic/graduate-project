@@ -1,4 +1,6 @@
-﻿using GroupTrip.Server.DataAccess;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GroupTrip.Server.DataAccess;
 using GroupTrip.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,5 +22,20 @@ namespace GroupTrip.Server.Controllers
     {
       _db.AddPayment(newPayment);
     }
-  }
+
+    [HttpGet]
+    [Route("api/Payments/Person/{personId}")]
+    public IEnumerable<Payment> PaymentsForPerson(int personId)
+    {
+      return _db.GetPaymentsForPerson(personId);
+    }
+
+    [HttpGet]
+    [Route("api/Payments/GroupTotal/{groupId}")]
+    public double GroupTotal(int groupId)
+    {
+      var total = _db.GetPaymentsForGroup(groupId).Select(p => p.Value).Sum();
+      return total;
+    }
+    }
 }

@@ -39,7 +39,7 @@ else
             {
                 <tr>
                     <td>
-                        @person.FirstName @person.LastName
+                        <NavLink href=@("/persondetails/" + person.Id)>@person.FirstName @person.LastName</NavLink>
                     </td>
                     <td>
                         To Pay: @(_expense / _members.Length)

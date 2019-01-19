@@ -1,0 +1,150 @@
+﻿@page "/persondetails/{Id}"
+@using GroupTrip.Shared.Models
+@using Microsoft.AspNetCore.Blazor.Services
+@inject HttpClient Http
+@inject IUriHelper UriHelper
+
+<h1>@_person.FirstName @_person.LastName</h1>
+
+@if (_person == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <button class="btn-info" onclick="@ModalJoinGroup">Join Group</button>
+    <table class='table'>
+        <thead display: table-header-group>
+        <tr>
+            <th>My Groups</th>
+            <th>My Expenses</th>
+            <th>Group Expenses</th>
+            <th>My Portion</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        @foreach (var group in _groups)
+        {
+            <tr>
+                <td>
+                    <a href='/groupdetails/@group.Id'>@group.Name</a>
+                </td>
+                <td>
+                    @_myPayments.Where(p => p.GroupId == group.Id).Select(p => p.Value).Sum()
+                </td>
+                <td>
+                    @_totalByGroup[group.Id]
+                </td>
+                <td>
+                    @_portionByGroup[group.Id]
+                </td>
+                <td>
+                    <button class="btn-danger" onclick="@(async () => await LeaveGroup(group.Id))">Leave Group</button>
+                </td>
+            </tr>
+        }
+
+        </tbody>
+    </table>
+}
+
+@if (_isJoinGroup)
+{
+    <div class="modal" tabindex="-1" style="display: block" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Join Group</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="@CloseModal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <select class="form-control" bind="@_selectedGroup">
+                        <option value="">-- Select Group --</option>
+                        @foreach (var group in _groupsImNotIn)
+                        {
+                            <option value="@group.Id">@group.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal" onclick="@CloseModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="@JoinGroup">Join Group</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@functions {
+
+    [Parameter]
+    private string Id { get; set; }
+
+    Person _person = new Person();
+    Group[] _groups = new Group[0];
+    Payment[] _myPayments = new Payment[0];
+    readonly Dictionary<int, double> _totalByGroup = new Dictionary<int, double>(); // groupId -> totalSum
+    readonly Dictionary<int, double> _portionByGroup = new Dictionary<int, double>(); // groupId -> myPortion
+    Group[] _groupsImNotIn = new Group[0];
+
+    bool _isJoinGroup;
+    int _selectedGroup;
+
+    protected override async Task OnInitAsync()
+    {
+        _person = await Http.GetJsonAsync<Person>("api/Persons/Details/" + Id);
+        _groups = await Http.GetJsonAsync<Group[]>("api/Persons/Groups/" + Id);
+        _myPayments = await Http.GetJsonAsync<Payment[]>("api/Payments/Person/" + Id);
+
+        foreach (var group in _groups)
+        {
+            var payments = await Http.GetJsonAsync<double>("api/Payments/GroupTotal/" + group.Id);
+            _totalByGroup.Add(group.Id, payments);
+
+            var members = await Http.GetJsonAsync<Person[]>("api/Groups/Members/" + group.Id);
+            _portionByGroup.Add(group.Id, payments / members.Length);
+        }
+
+        var allGroups = await Http.GetJsonAsync<Group[]>("api/Groups/Index");
+        var groupIds = _groups.Select(g => g.Id).ToArray();
+        _groupsImNotIn = allGroups.Where(g => !groupIds.Contains(g.Id)).ToArray();
+    }
+
+    async Task LeaveGroup(int groupId)
+    {
+        var url = "api/Groups/RemoveFromGroup/" + groupId;
+        var group = _groups.First(g => g.Id == groupId);
+        _groupsImNotIn = _groupsImNotIn.Append(group).ToArray();
+        _groups = _groups.Where(g => g.Id != groupId).ToArray();
+        await Http.SendJsonAsync(HttpMethod.Delete, url, int.Parse(Id));
+    }
+
+    void ModalJoinGroup()
+    {
+        _isJoinGroup = true;
+    }
+
+    void CloseModal()
+    {
+        _isJoinGroup = false;
+    }
+
+    async Task JoinGroup()
+    {
+        CloseModal();
+        await Http.SendJsonAsync(HttpMethod.Put, "api/Groups/AddMember/" + _selectedGroup, _person.Id);
+        _selectedGroup = -1;
+        await OnInitAsync();
+    }
+
+}

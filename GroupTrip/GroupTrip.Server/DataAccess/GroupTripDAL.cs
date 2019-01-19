@@ -70,8 +70,12 @@ namespace GroupTrip.Server.DataAccess
     {
       return _context.GroupDbSet.Where(g => g.TripId == tripId);
     }
-
-    public void RemoveGroup(int groupId)
+    public IEnumerable<Group> GetGroupsForPerson(int personId)
+    {
+      var groups = _context.PersonGroupDbSet.Where(pg => pg.PersonId == personId).Select(pg => pg.GroupId);
+      return _context.GroupDbSet.Where(g => groups.Contains(g.Id));
+    }
+        public void RemoveGroup(int groupId)
     {
       var group = GetGroup(groupId);
       RemovePersonGroupByGroup(groupId);

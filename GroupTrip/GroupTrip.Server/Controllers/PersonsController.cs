@@ -30,8 +30,16 @@ namespace GroupTrip.Server.Controllers
       return _db.GetPerson(id);
     }
 
-    // POST: Persons/Create
-    [HttpPost]
+    // GET: Persons/Groups/5
+    [HttpGet]
+    [Route("api/Persons/Groups/{personId}")]
+    public IEnumerable<Group> Groups(int personId)
+    {
+      return _db.GetGroupsForPerson(personId);
+    }
+
+        // POST: Persons/Create
+        [HttpPost]
     [Route("api/Persons/Create/{groupId}")]
     public void Create(int groupId, [FromBody] Person newPerson)
     {
