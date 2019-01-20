@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="GroupTrip.Server.DataAccess.GroupTripContext" Collapsed="true">
+    <Position X="3.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAEAAQgAAQAAAAAAABAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataAccess\GroupTripContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GroupTrip.Server.DataAccess.GroupTripDAL" Collapsed="true">
+    <Position X="5.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACgBQAAAgEALACAACAgARMAQCCAIBUMAoCAAABAAAE=</HashCode>
+      <FileName>DataAccess\GroupTripDAL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GroupTrip.Server.Controllers.GroupsController" Collapsed="true">
+    <Position X="2" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAEQBAACAAACAAAAAAQEAAEACAAEAAAAAAAA=</HashCode>
+      <FileName>Controllers\GroupsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GroupTrip.Server.Controllers.PaymentsController" Collapsed="true">
+    <Position X="2" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAIAAAAAAAAAAAAAAAgAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\PaymentsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GroupTrip.Server.Controllers.PersonsController" Collapsed="true">
+    <Position X="3.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgEAAAAABAAAAAAAAAAAAAAEAAEACAAEAAAAAAAA=</HashCode>
+      <FileName>Controllers\PersonsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GroupTrip.Server.Controllers.TripsController" Collapsed="true">
+    <Position X="3.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAABAAAAAAAAAAAAAAEAAEACAAEAAAAAAAA=</HashCode>
+      <FileName>Controllers\TripsController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GroupTrip.Server.Program" Collapsed="true">
+    <Position X="5.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GroupTrip.Server.Startup" Collapsed="true">
+    <Position X="2" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Startup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
